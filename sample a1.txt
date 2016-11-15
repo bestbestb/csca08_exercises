@@ -1,0 +1,289 @@
+# Functions for running an encryption or decryption.
+ 
+# The values of the two jokers.
+JOKER1 = 27
+JOKER2 = 28
+ 
+# Write your functions here:
+def clean_message(message):
+    '''(str) -> str
+ 
+    Returns the copy of all the alphabetical letters in a message in uppercase
+    form.
+ 
+    >>> clean_message('s9dep29')
+    'SDEP'
+    >>> clean_message('abcd d20')
+    'ABCDD'
+    '''
+ 
+    string = ''
+ 
+    for char in message:
+        if char.isalpha():
+            string = string + char
+ 
+    return string.upper()
+ 
+def encrypt_letter(letter, keystream):
+    """(str, int) -> str
+ 
+    Precondition: letter must be uppercase.
+ 
+    Return the letter that's encrypted by keystream.
+ 
+    >>> encrypt_letter('A', 2)
+    'C'
+    >>> encrypt_letter('T', 7)
+    'A'
+    """
+ 
+    ord_diff = ord(letter) - ord('A')
+    new_char_ord = (ord_diff + keystream) % 26
+    return chr(new_char_ord + ord('A'))
+ 
+def decrypt_letter(letter, keystream):
+    """ (str, int) -> str
+ 
+    Precondition: letter is uppercase.
+ 
+    Return the letter that's decrypted by keystream.
+ 
+    >>> decrypt_letter('C', 2)
+    'A'
+    >>> decyrpt_letter('A', 7)
+    'T'
+    """
+ 
+    ord_diff = ord(letter) - ord('A')
+    new_char_ord = (ord_diff - keystream) % 26
+    return chr(new_char_ord + ord('A'))
+ 
+def swap_cards(deck, index):
+    """ (list of int, int) -> NoneType
+ 
+    Swap the card at the index with the card that follows it.
+ 
+    >>> deck = [2, 3, 4]
+    >>> swap_cards(deck, 0)
+    >>> deck
+    deck = [3, 2, 4]
+    """
+ 
+    second_index = (index + 1) % len(deck)
+ 
+    card_value = deck[index]
+    second_card_value = deck[second_index]
+    deck[second_index] = card_value
+    deck[index] = second_card_value
+ 
+def move_joker_1(deck):
+    """ (list of int) -> NoneType
+ 
+    Find JOKER1 and swap it with the card that follows it.
+ 
+    >>> deck = [1, JOKER1, 4, 6, 9]
+    >>> move_joker_1(deck)
+    >>> deck
+    deck = [1, 4, JOKER1, 6, 9]
+    """
+ 
+    for num in range(len(deck)):
+        if deck[num] == JOKER1:
+            joker_index = num
+ 
+    index_after_joker = (joker_index + 1) % len(deck)
+ 
+    joker_card_value = deck[joker_index]
+    first_card_value = deck[index_after_joker]
+    deck[index_after_joker] = joker_card_value
+    deck[joker_index] = first_card_value
+ 
+def move_joker_2(deck):
+    """(list of int) -> NoneType
+ 
+    Find JOKER2 and move it two cards down.
+ 
+    >>> deck = [2, 3, JOKER2]
+    >>> move_joker_2(deck)
+    >>> deck
+    deck = [3, JOKER2, 2]
+    """   
+ 
+    for num in range(len(deck)):
+        if deck[num] == JOKER2:
+            joker_index = num
+ 
+    first_index_after_joker = (joker_index + 1) % len(deck)
+    second_index_after_joker = (joker_index + 2) % len(deck)   
+ 
+    joker_card_value = deck[joker_index]
+    first_card_value = deck[first_index_after_joker]
+    second_card_value = deck[second_index_after_joker]
+    deck[second_index_after_joker] = joker_card_value
+    deck[first_index_after_joker] = second_card_value
+    deck[joker_index] = first_card_value
+ 
+def triple_cut(deck):
+    """ (list of int) -> NoneType
+ 
+    Find the two jokers and do a triple cut.
+ 
+    >>> deck = [2, 4, JOKER2, 3, JOKER1, 9]
+    >>> triple_cut(deck)
+    >>> deck
+    deck = [9, JOKER2, 3, JOKER1, 2, 4,]
+    """
+ 
+    cards_added = 0
+ 
+    for num in range(len(deck)):
+        if deck[num] == JOKER1:
+            joker1_index = num
+        if deck[num] == JOKER2:
+            joker2_index = num
+ 
+    if joker1_index > joker2_index:
+        for num in range(joker2_index):
+            card = deck[0]
+            deck.remove(card)
+            deck.append(card)
+            cards_added += 1
+ 
+        for num in range(len(deck) - cards_added - 1, joker1_index - 
+                         cards_added, -1):
+            card = deck[len(deck) - cards_added - 1]
+            deck.remove(card)
+            deck.insert(0, card)
+ 
+    elif joker2_index > joker1_index:
+        for num in range(joker1_index):
+            card = deck[0]
+            deck.remove(card)
+            deck.append(card)
+            cards_added += 1
+ 
+        for num in range(len(deck) - cards_added - 1, joker2_index - 
+                         cards_added, -1):
+            card = deck[len(deck) - cards_added - 1]
+            deck.remove(card)
+            deck.insert(0, card)
+ 
+def insert_top_to_bottom(deck):
+    """ (list of int) -> NoneType
+ 
+    Using the value of the bottom card, move that many cards from the top of 
+    the deck to the bottom, inserting them just above the bottom card.
+ 
+    >>> deck = [2, 4, 6, 9, 2]
+    >>> insert_top_to_bottom(deck)
+    >>> deck
+    deck = [6, 9, 2, 2, 4]
+    """
+ 
+    cards_to_move = deck[len(deck)-1]
+    if cards_to_move == JOKER2:
+        cards_to_move = JOKER1
+ 
+    for num in range(cards_to_move):
+        card = deck[0]
+        deck.remove(card)
+        deck.append(card)    
+ 
+def get_card_at_top_index(deck):
+    """ (list of int) -> NoneType
+ 
+    Using the top card's value as an index, return the card in that deck at that
+    index.
+ 
+    """
+    top_card = deck[0]
+    if top_card != JOKER2:
+        return deck[top_card]
+    else:
+        return deck[JOKER1]
+ 
+def get_next_value(deck):
+ 
+    move_joker_1(deck)
+    move_joker_2(deck)
+    triple_cut(deck)
+    insert_top_to_bottom(deck)
+    return get_card_at_top_index(deck)
+ 
+def get_next_keystream_value(deck):
+    """ (list of int) -> int
+ 
+    Returns a valid keystream value.
+    """
+ 
+    value = 0
+ 
+    while value < 1 or value > 26:
+        get_next_value(deck)
+ 
+    return value
+ 
+def process_message(deck, message, encrypt_decrypt):
+    """ (list of int, str, str) -> str
+ 
+    Returns the encrypted or decrypted message.
+ 
+    >>> process_message([3, 5, 7, 27], 'funny', 'e')
+    """
+ 
+    code_message = ''
+ 
+    new_clean_message = clean_message(message)
+ 
+    for char in message:
+        keystream = get_next_keystream_value(deck)
+        if encrypt_decrypt == 'e':
+            code_message = code_message + encrypt_letter()
+        if encrypt_decrypt == 'd':
+            code_message = code_message + decrypt_letter()
+ 
+    return code_message
+ 
+def process_messages(deck, messages, encrypt_decrypt):
+    """ (list of int, list of str, str) -> str
+ 
+    Return the list of encrypted or decrypted messages.
+ 
+    """
+ 
+    new_messages = []
+ 
+    for i in range(len(messages)):
+        new_msg = process_message(messages[i])
+        new_messages.append(new_msg)
+ 
+    return new_messages    
+ 
+def read_messages(text):
+    """ (file open for reading) -> list of str
+ 
+    Read and returns the contents of the file as a list of messages.
+ 
+    """
+ 
+    messages = []
+    for line in file:
+        messages.append(line)
+ 
+    return messages
+ 
+def read_deck(text):
+    """ (file open for readin) -> list of str
+ 
+    Read and return the integer contents of the file.
+ 
+    """
+ 
+    deck = []
+    for line in file:
+        cleaned_line = line.split()
+        for i in range(len(cleaned_line)):
+            deck.append(int(cleaned_line[i]))
+ 
+    return deck
